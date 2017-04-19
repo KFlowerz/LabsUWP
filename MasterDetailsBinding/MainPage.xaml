@@ -1,0 +1,129 @@
+﻿<Page
+    x:Class="MasterDetailsBinding.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:MasterDetailsBinding"
+    xmlns:data="using:MasterDetailsBinding"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Page.Resources>
+        <CollectionViewSource x:Name="Leagues"
+            Source="{x:Bind ViewModel}"/>
+        <CollectionViewSource x:Name="Divisions"
+            Source="{Binding Divisions, Source={StaticResource Leagues}}"/>
+        <CollectionViewSource x:Name="Teams"
+            Source="{Binding Teams, Source={StaticResource Divisions}}"/>
+       
+        <Style TargetType="TextBlock">
+            <Setter Property="FontSize" Value="15"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+        </Style>
+
+        <Style TargetType="ListBox">
+            <Setter Property="FontSize" Value="15"/>
+        </Style>
+
+        <Style TargetType="ContentControl">
+            <Setter Property="FontSize" Value="15"/>
+        </Style>
+
+    </Page.Resources>
+
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+        <!--<StackPanel Orientation="Horizontal">
+
+            --><!-- All Leagues view --><!--
+
+            <StackPanel Margin="5">
+                <TextBlock Text="All Leagues"/>
+                <ListBox ItemsSource="{Binding Source={StaticResource Leagues}}" 
+                    DisplayMemberPath="Name"/>
+            </StackPanel>
+
+            --><!-- League/Divisions view --><!--
+
+            <StackPanel Margin="5">
+                <TextBlock Text="{Binding Name, Source={StaticResource Leagues}}"/>
+                <ListBox ItemsSource="{Binding Source={StaticResource Divisions}}" 
+                    DisplayMemberPath="Name"/>
+            </StackPanel>
+
+            --><!-- Division/Teams view --><!--
+
+            <StackPanel Margin="5">
+                <TextBlock Text="{Binding Name, Source={StaticResource Divisions}}"/>
+                <ListBox ItemsSource="{Binding Source={StaticResource Teams}}" 
+                    DisplayMemberPath="Name"/>
+            </StackPanel>
+
+            --><!-- Team view --><!--
+
+            <ContentControl Content="{Binding Source={StaticResource Teams}}">
+                <ContentControl.ContentTemplate>
+                    <DataTemplate>
+                        <StackPanel Margin="5">
+                            <TextBlock Text="{Binding Name}" 
+                                FontSize="15" FontWeight="Bold"/>
+                            <StackPanel Orientation="Horizontal" Margin="10,10">
+                                <TextBlock Text="Wins:" Margin="0,0,5,0"/>
+                                <TextBlock Text="{Binding Wins}"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="10,0">
+                                <TextBlock Text="Losses:" Margin="0,0,5,0"/>
+                                <TextBlock Text="{Binding Losses}"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </DataTemplate>
+                </ContentControl.ContentTemplate>
+            </ContentControl>
+
+        </StackPanel>-->
+        <ListView x:Name="lvMain" SelectionMode="Single">
+            <ListView.ItemTemplate>
+                <DataTemplate >
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Top">
+                        <TextBlock Text="{Binding Name}"/>                        
+                        <ListView x:Name="lvDivisions" ItemsSource="{Binding Divisions}" SelectedItem="{Binding SelectedItem}" SelectionMode="Single" VerticalAlignment="Top">
+                            <ListView.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Name}"/>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
+                        <ContentPresenter
+                            x:Name="DetailContentPresenter"
+                            Grid.Column="1"
+                            Grid.RowSpan="2"
+                            BorderThickness="1,0,0,0"
+                            Padding="24,0"
+                            BorderBrush="{ThemeResource SystemControlForegroundBaseLowBrush}"
+                            Content="{x:Bind SelectedItem, Mode=OneWay}">
+                            <ContentPresenter.ContentTemplate>
+                                <DataTemplate x:DataType="data:Division">
+                                    <StackPanel>
+                                        <ListView ItemsSource="{Binding x:Teams}" SelectionMode="Multiple">
+                                            <ListView.ItemTemplate>
+                                                <DataTemplate>
+                                                    <TextBlock Text="{Binding Name}"/>
+
+                                                </DataTemplate>
+                                            </ListView.ItemTemplate>
+                                        </ListView>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ContentPresenter.ContentTemplate>
+                            <ContentPresenter.ContentTransitions>
+                                <TransitionCollection/>
+                            </ContentPresenter.ContentTransitions>
+                        </ContentPresenter>
+                    </StackPanel>
+                    
+                </DataTemplate>
+            </ListView.ItemTemplate>
+            
+        </ListView>
+    </Grid>
+</Page>
